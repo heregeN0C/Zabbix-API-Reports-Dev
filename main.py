@@ -10,9 +10,12 @@ def filtroReport():
 
     payload = {
         "jsonrpc": "2.0",
-        "method": "graph.get",
+        "method": "history.get",
         "params": {
-            "hostids": "10681"
+            "hostids": "10295",
+            "itemids": "49470",
+            "time_from": 1662001200,
+            "time_till": 1662605940,
         },
         "auth": token,
         "id": 1,
@@ -20,15 +23,18 @@ def filtroReport():
 
     r = requests.post(url=url, json=payload)
 
-    return r
+    return r.json()
 
-resposta = filtroReport().json()
-resposta = json.dumps(resposta)
-# print(resposta)
+res = filtroReport()
 
-width = resposta["result":0]
-print(width)
+# print(res)
 
-# plt.plot([])
-# plt.ylabel('some numbers')
-# plt.show()
+for i in res['result']:
+    for j in res['result']:
+        plt.plot([j['clock']])
+    plt.plot(i['value'])
+plt.show()
+# EXEMPLO:
+# for i in stanley['items']:
+#     if i['province'] == 'California':
+#         print(i)
