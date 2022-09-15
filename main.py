@@ -1,4 +1,3 @@
-import json
 
 import matplotlib.pyplot as plt
 import requests
@@ -12,10 +11,11 @@ def filtroReport():
         "jsonrpc": "2.0",
         "method": "history.get",
         "params": {
+            "output": "extend",
             "hostids": "10295",
             "itemids": "49470",
-            "time_from": 1662001200,
-            "time_till": 1662605940,
+            "sortfield": "clock",
+            "limit": 10,
         },
         "auth": token,
         "id": 1,
@@ -26,15 +26,11 @@ def filtroReport():
     return r.json()
 
 res = filtroReport()
+valores = []
+for y in range(len(res['result'])):
+    valores.append(res['result'][y]['value'])
+#print(valores)
 
-# print(res)
-
-for i in res['result']:
-    for j in res['result']:
-        plt.plot([j['clock']])
-    plt.plot(i['value'])
+for i in range(len(valores)):
+    plt.plot(valores)
 plt.show()
-# EXEMPLO:
-# for i in stanley['items']:
-#     if i['province'] == 'California':
-#         print(i)
