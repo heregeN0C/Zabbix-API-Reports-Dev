@@ -1,8 +1,8 @@
-import numpy as np
 from session import connect
 import datetime
 import time
 from matplotlib import pyplot as plt, artist
+import zoneinfo
 
 zbx = connect()
 
@@ -46,12 +46,27 @@ def main():
         for a in tempo:
             tempoInteiro.append(int(a))
         ###################################################################
-        # print(tempoInteiro,'\n',dadosInteiros)
 
-        plt.figure(figsize=(12, 10))
-        plt.plot(tempoInteiro, dadosInteiros)
-        plt.show()
+        ####### CONVERTE DADOS EM BITS POR SEGUNDO PARA MEGABITS POR SEGUNDO ########
+        dadosEmMbps = []
+        for b in range(len(dadosInteiros)):
+            dadosEmMbps.append(dadosInteiros[b]/1000000)
 
+        #############################################################################
+
+        ####33# CONVERTE TEMPO DE TIMESTAMP DE VOLTA PARA DATETIME ##################
+        tempoEmDatetime = []
+        for c in range(len(tempoInteiro)):
+            tempoEmDatetime.append(datetime.datetime.fromtimestamp(tempoInteiro[c]).strftime('%d/%m %H:%M'))
+        #############################################################################
+        # print(tempoEmDatetime,'\n',dadosEmMbps)
+
+        plt.figure(figsize=(28, 12))
+        plt.ylabel('tráfego em Mbps')
+        plt.xlabel('tempo percorrido')
+        plt.plot(tempoEmDatetime, dadosEmMbps)
+        # plt.show()
+        plt.savefig(fname='teste_imagem_em_pdf', format='png')
     else:
         print('erro ao selecionar grupo de host!')
 main()
