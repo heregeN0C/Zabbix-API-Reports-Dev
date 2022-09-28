@@ -1,7 +1,7 @@
 from session import connect
 import datetime
 import time
-from matplotlib import pyplot as plt, artist
+from matplotlib import pyplot as plt
 import zoneinfo
 
 zbx = connect()
@@ -22,13 +22,15 @@ def main():
         hostId = input('\nDigite o id do host que deseja: ')
         dataInicio = input('\nDigite a data de início desejada(dd/mm/aaaa hh:mm): ')
         dataFinal = input('\nDigite a data final desejada(dd/mm/aaaa hh:mm): ')
+        itemId = input('\nDigite o id do item que deseja(no momento somente itens de consumo de banda são aceitos): ')
+
         dataInicioTimestamp = time.mktime(datetime.datetime.strptime(dataInicio,'%d/%m/%Y %H:%M').timetuple())
         dataFinalTimestamp = time.mktime(datetime.datetime.strptime(dataFinal, '%d/%m/%Y %H:%M').timetuple())
 
         history_query = zbx.do_request(method='history.get', params={
             'hostids': hostId, 'time_from':int(dataInicioTimestamp),
             'time_till': int(dataFinalTimestamp),
-            'itemids': '1285279',
+            'itemids': itemId,
             'sortfield': 'clock'
             })
 
@@ -61,12 +63,16 @@ def main():
         #############################################################################
         # print(tempoEmDatetime,'\n',dadosEmMbps)
 
-        plt.figure(figsize=(28, 12))
+        # plt.figure(figsize=(28, 18))
         plt.ylabel('tráfego em Mbps')
         plt.xlabel('tempo percorrido')
-        plt.plot(tempoEmDatetime, dadosEmMbps)
-        # plt.show()
-        plt.savefig(fname='teste_imagem_em_pdf', format='png')
+        fig, ax = plt.subplots()
+        plt.xscale()
+        ax.plot(tempoEmDatetime, dadosEmMbps, markersize=12)
+        ax.grid(True)
+        ax.tick_params(axis='x' ,labelrotation=45, labelsize='medium', width=3)
+        plt.show()
+        # plt.savefig(fname='teste_imagem_em_pdf', format='png')
     else:
         print('erro ao selecionar grupo de host!')
 main()
