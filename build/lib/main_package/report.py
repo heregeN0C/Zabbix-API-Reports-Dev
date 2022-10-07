@@ -63,13 +63,14 @@ def main():
         #############################################################################
         # print(tempoEmDatetime,'\n',dadosEmMbps)
 
-        
-        fig, ax = plt.subplots()
-        ax.plot(tempoEmDatetime, dadosEmMbps, markersize=12)
-        ax.tick_params(axis='x' ,labelrotation=90, labelsize='medium', width=1)
-
+        # plt.figure(figsize=(28, 18))
         plt.ylabel('tráfego em Mbps')
         plt.xlabel('tempo percorrido')
+        fig, ax = plt.subplots()
+        plt.xscale()
+        ax.plot(tempoEmDatetime, dadosEmMbps, markersize=12)
+        ax.grid(True)
+        ax.tick_params(axis='x' ,labelrotation=45, labelsize='medium', width=3)
         plt.show()
         # plt.savefig(fname='teste_imagem_em_pdf', format='png')
     else:
