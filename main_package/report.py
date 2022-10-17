@@ -70,8 +70,8 @@ def main():
 
         plt.ylabel('tráfego em Mbps')
         plt.xlabel('tempo percorrido')
-        plt.show()
-        # plt.savefig(fname='teste_imagem_em_pdf', format='png')
+        # plt.show()
+        plt.savefig(fname='report_image', format='png')
     else:
         print('erro ao selecionar grupo de host!')
 main()
