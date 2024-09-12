@@ -1,5 +1,11 @@
 {% extends "template.html" %}
 
 {% block content %}
-    <h1>TESTE AQUI</h1>
+    <h1>LUNIO REPORTS</h1>
+    <h2>Versao da API: {{ version }}</h2>
+    <ul>
+        {% for group in group_list %}
+            <li>{{ group.name }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}
