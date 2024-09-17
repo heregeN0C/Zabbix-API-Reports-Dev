@@ -1,0 +1,18 @@
+{% extends "template.html" %}
+
+{% block content %}
+    <h1>LUNIO REPORTS</h1>
+    <form action="/host_select/metrics_select/" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+        <fieldset>
+            <label for="host_select">Selecione o host desejado</label>
+            <select id="host_select" name="host_select">
+                {% for graph in graph_list %}
+                    <option value="{{ graph.graphid }};{{ graph.name }}">{{ graph.name }}</option>
+                {% endfor %}
+            </select>
+        </fieldset>
+        <input type="submit", class="btn btn-primary" value="Prosseguir">
+    </form>
+    {{ erros }}
+{% endblock %}

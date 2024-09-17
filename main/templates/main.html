@@ -3,9 +3,17 @@
 {% block content %}
     <h1>LUNIO REPORTS</h1>
     <h2>Versao da API: {{ version }}</h2>
-    <ul>
-        {% for group in group_list %}
-            <li>{{ group.name }}</li>
-        {% endfor %}
-    </ul>
+    <form action="/host_select/" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+        <fieldset>
+            <label for="group_select">Selecione o grupo de hosts desejado</label>
+            <select id="group_select" name="group_select">
+                {% for group in group_list %}
+                    <option value="{{ group.groupid }};{{ group.name }}">{{ group.name }}</option>
+                {% endfor %}
+            </select>
+        </fieldset>
+        <input type="submit", class="btn btn-primary" value="Prosseguir">
+    </form>
+    {{ erros }}
 {% endblock %}
