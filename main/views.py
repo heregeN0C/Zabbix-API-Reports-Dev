@@ -104,3 +104,18 @@ def MetricsSelect(request):
     else:
         #form = forms.GraphForm()
         return render(request, 'graph.html')
+
+def reportGen(request):
+    if request.method == ('POST'):
+        form = forms.ReportForm(request.POST)
+        if form.is_valid():
+            graph = str(form.cleaned_data['graph_select'])
+            date = str(form.cleaned_data['date_select'])
+            time = str(form.cleaned_data['time_select'])
+            date_end = str(form.cleaned_data['date_end_select'])
+            time_end = str(form.cleaned_data['time_end_select'])
+            print(graph)
+            return render(request, 'sucess.html')
+        else:
+            erros = form.errors
+            return render(request, 'graph.html', {'erros':erros})

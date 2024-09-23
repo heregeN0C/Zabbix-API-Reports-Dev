@@ -2,16 +2,24 @@
 
 {% block content %}
     <h1>LUNIO REPORTS</h1>
-    <form action="/host_select/metrics_select/" method="POST" enctype="multipart/form-data">
+    <form action="/report_gen/" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
         <fieldset>
-            <label for="host_select">Selecione o host desejado</label>
-            <select id="host_select" name="host_select">
+            <label for="graph_select">Selecione o grafico do item e o período desejado</label>
+            <select id="graph_select" name="graph_select">
                 {% for graph in graph_list %}
                     <option value="{{ graph.graphid }};{{ graph.name }}">{{ graph.name }}</option>
                 {% endfor %}
             </select>
         </fieldset>
+        <label for="date_select">Data de inicio</label>
+        <input type="date", id="date_select">
+        <label for="time_select">Hora de inicio</label>
+        <input type="time", id="time_select">
+        <label for="date_end_select">Data Final</label>
+        <input type="date", id="date_end_select">
+        <label for="time_end_select">Hora Final</label>
+        <input type="time", id="time_end_select">
         <input type="submit", class="btn btn-primary" value="Prosseguir">
     </form>
     {{ erros }}
