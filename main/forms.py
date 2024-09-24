@@ -13,11 +13,9 @@ class HostForm(forms.Form):
     host_select = forms.CharField(required=True)
 
 class ReportForm(forms.Form):
-    CHOICES = [
-        ('opcaoteste', 'OPção Teste')
-    ]
+
     graph_select = forms.CharField()
-    date_select = forms.DateField()
-    time_select = forms.TimeField()
-    date_end_select = forms.DateField()
-    time_end_select = forms.TimeField()
+    date_select = forms.CharField()
+    time_select = forms.CharField()
+    date_end_select = forms.CharField()
+    time_end_select = forms.CharField()

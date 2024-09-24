@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from pyzabbix import ZabbixAPI
 from . import forms
 import re
-
+from datetime import datetime
 # Create your views here.
 
 token = "888f5efeca7d1cda0ecc2b468f284ea41e8cc28889730abd5a2f3b41fca2a586"
@@ -106,7 +106,7 @@ def MetricsSelect(request):
         return render(request, 'graph.html')
 
 def reportGen(request):
-    if request.method == ('POST'):
+    if request.method == 'POST':
         form = forms.ReportForm(request.POST)
         if form.is_valid():
             graph = str(form.cleaned_data['graph_select'])
@@ -114,8 +114,27 @@ def reportGen(request):
             time = str(form.cleaned_data['time_select'])
             date_end = str(form.cleaned_data['date_end_select'])
             time_end = str(form.cleaned_data['time_end_select'])
-            print(graph)
-            return render(request, 'sucess.html')
+            data_inicio = date+" "+time
+            data_inicio_formatada = datetime.strptime(data_inicio, '%Y-%m-%d %H:%M')
+
+            pattern = r"^\d+"
+            match = re.match(pattern, graph)
+            if match:
+                graphid = str(match.group())
+                # Coletar o histõrico do item
+
+                payload_gitem = {
+                    "graphids": graphid,
+                    "selectItems": ["itemid", "name"]
+                }
+
+                r_gitem = zapi.do_request("graphitem.get", payload_gitem)
+
+                print(r_gitem)
+                return render(request, 'sucess.html')
+            else:
+                print("erro ao coletar graphid")
+
         else:
             erros = form.errors
             return render(request, 'graph.html', {'erros':erros})

@@ -11,16 +11,17 @@
                     <option value="{{ graph.graphid }};{{ graph.name }}">{{ graph.name }}</option>
                 {% endfor %}
             </select>
+            <label for="date_select">Data de inicio</label>
+            <input type="date" name="date_select" id="date_select" required>
+            <label for="time_select">Hora de inicio</label>
+            <input type="time" name="time_select" id="time_select" required>
+            <label for="date_end_select">Data Final</label>
+            <input type="date" name="date_end_select" id="date_end_select" required>
+            <label for="time_end_select">Hora Final</label>
+            <input type="time" name="time_end_select" id="time_end_select" required>
+            <input type="submit" class="btn btn-primary" value="Prosseguir">
         </fieldset>
-        <label for="date_select">Data de inicio</label>
-        <input type="date", id="date_select">
-        <label for="time_select">Hora de inicio</label>
-        <input type="time", id="time_select">
-        <label for="date_end_select">Data Final</label>
-        <input type="date", id="date_end_select">
-        <label for="time_end_select">Hora Final</label>
-        <input type="time", id="time_end_select">
-        <input type="submit", class="btn btn-primary" value="Prosseguir">
+
     </form>
     {{ erros }}
 {% endblock %}
