@@ -63,6 +63,18 @@ def hostSelect(request):
                     }
                     r = zapi.do_request("host.get", payload)
                     host_list = r["result"]
+                    response = HttpResponse("Cookie set!")
+                    #TODO: Transformar o retorno da lista em JSON, e Salvar o hostid como cookie
+
+                    # Definir um cookie com mais opções
+                    response.set_cookie(
+                        'favorite_color',  # nome do cookie
+                        host_list,  # valor do cookie
+                        max_age=3600,  # expira em 1 hora
+                        secure=True,  # só permite HTTPS
+                        httponly=True,  # acessível apenas pelo servidor
+                        samesite='Lax'  # evita envio com requisições de outros sites
+                    )
                     return render(request,'hosts.html', context={"host_list": host_list})
 
             else:
