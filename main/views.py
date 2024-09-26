@@ -63,19 +63,13 @@ def hostSelect(request):
                     }
                     r = zapi.do_request("host.get", payload)
                     host_list = r["result"]
-                    response = HttpResponse("Cookie set!")
+
                     #TODO: Transformar o retorno da lista em JSON, e Salvar o hostid como cookie
 
                     # Definir um cookie com mais opções
-                    response.set_cookie(
-                        'favorite_color',  # nome do cookie
-                        host_list,  # valor do cookie
-                        max_age=3600,  # expira em 1 hora
-                        secure=True,  # só permite HTTPS
-                        httponly=True,  # acessível apenas pelo servidor
-                        samesite='Lax'  # evita envio com requisições de outros sites
-                    )
-                    return render(request,'hosts.html', context={"host_list": host_list})
+                    response = render(request, 'hosts.html', context={"host_list": host_list})
+
+                    return response
 
             else:
                 raise ValueError("O campo de selecao do grupo nao está sendo passado.")
@@ -105,7 +99,10 @@ def MetricsSelect(request):
                     }
                     r = zapi.do_request("graph.get", payload)
                     graph_list = r["result"]
-                    return render(request,'graph.html', context={"graph_list": graph_list})
+
+                    response = render(request, 'graph.html', context={"graph_list": graph_list})
+                    response.set_cookie(key='host_id', value=hostid)
+                    return response
 
             else:
                 raise ValueError("O campo de selecao do grupo nao está sendo passado.")
@@ -134,15 +131,15 @@ def reportGen(request):
             if match:
                 graphid = str(match.group())
                 # Coletar o histõrico do item
-
+                hostid = request.COOKIES['host_id']
                 payload_gitem = {
                     "graphids": graphid,
                     "selectItems": ["itemid", "name"]
                 }
 
-                r_gitem = zapi.do_request("graphitem.get", payload_gitem)
+                #r_gitem = zapi.do_request("graphitem.get", payload_gitem)
 
-                print(r_gitem)
+                #print(request.COOKIES['host_id'])
                 return render(request, 'sucess.html')
             else:
                 print("erro ao coletar graphid")
