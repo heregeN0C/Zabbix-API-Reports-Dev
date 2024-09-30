@@ -4,6 +4,7 @@ from pyzabbix import ZabbixAPI
 from . import forms
 import re
 from datetime import datetime
+import matplotlib.pyplot as plt
 # Create your views here.
 
 token = "888f5efeca7d1cda0ecc2b468f284ea41e8cc28889730abd5a2f3b41fca2a586"
@@ -125,22 +126,54 @@ def reportGen(request):
             time_end = str(form.cleaned_data['time_end_select'])
             data_inicio = date+" "+time
             data_inicio_formatada = datetime.strptime(data_inicio, '%Y-%m-%d %H:%M')
+            data_final = date_end+" "+time_end
+            data_final_formatada = datetime.strptime(data_final, '%Y-%m-%d %H:%M')
 
             pattern = r"^\d+"
             match = re.match(pattern, graph)
             if match:
                 graphid = str(match.group())
-                # Coletar o histõrico do item
+
                 hostid = request.COOKIES['host_id']
                 payload_gitem = {
+                    "hostid": hostid,
                     "graphids": graphid,
                     "selectItems": ["itemid", "name"]
                 }
 
-                #r_gitem = zapi.do_request("graphitem.get", payload_gitem)
+                r_gitem = zapi.do_request("graphitem.get", payload_gitem)
 
-                #print(request.COOKIES['host_id'])
-                return render(request, 'sucess.html')
+                for row in r_gitem['result']:
+                    itemid = row["itemid"]
+                    # coletar historico do item
+                    payload_history = {
+                        "itemids": itemid,
+                        "hostids": hostid,
+                        "time_from": int(data_inicio_formatada.timestamp()),  # Certifique-se de que este tempo esteja correto
+                        "time_till": int(data_final_formatada.timestamp()),
+                        "sortfield": "clock",
+                        "sortorder": "ASC"
+                    }
+
+                    r_history = zapi.do_request("history.get", payload_history)
+
+                    time_ha = []
+                    value_ha = []
+                    for i in range(len(r_history["result"])):
+                        # Converter o timestamp Unix para uma data legível
+                        time_ha.append(datetime.fromtimestamp(int(r_history["result"][i]["clock"])))
+                        # Converter o valor para float
+                        valor_convertido = float(r_history["result"][i]["value"]) / 1000000
+                        value_ha.append(round(valor_convertido, 2))
+
+                    fig, ax = plt.subplots()
+                    ax.plot(time_ha, value_ha)
+                    ax.set_xlabel('Time')
+                    ax.set_ylabel('Value')
+
+                    plt.show()
+
+                    return render(request, 'sucess.html')
             else:
                 print("erro ao coletar graphid")
 
