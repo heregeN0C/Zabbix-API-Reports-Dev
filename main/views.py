@@ -5,6 +5,9 @@ from . import forms
 import re
 from datetime import datetime
 import matplotlib.pyplot as plt
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+import os
 # Create your views here.
 
 token = "888f5efeca7d1cda0ecc2b468f284ea41e8cc28889730abd5a2f3b41fca2a586"
@@ -166,12 +169,24 @@ def reportGen(request):
                         valor_convertido = float(r_history["result"][i]["value"]) / 1000000
                         value_ha.append(round(valor_convertido, 2))
 
-                    fig, ax = plt.subplots()
+                    fig, ax = plt.subplots(figsize=(75, 25))
                     ax.plot(time_ha, value_ha)
-                    ax.set_xlabel('Time')
-                    ax.set_ylabel('Value')
+                    ax.set_xlabel('Time', fontsize='30')
+                    ax.set_ylabel('Trafigo(em Mbps)', fontsize='30')
 
-                    plt.show()
+
+                    data_today = str(datetime.now().strftime('%Y%m%d%H%M'))
+                    #print(data_today)
+                    #plt.show()
+
+                    caminho_arquivo = f"Reports/report_{data_today}_{hostid}_{graphid}.pdf"
+                    diretorio = os.path.dirname(caminho_arquivo)
+                    #salvar arquivo
+                    if not os.path.exists(diretorio):
+                        os.makedirs(diretorio)
+                        plt.savefig(f"Reports/report_{data_today}_{hostid}_{graphid}.pdf", format='pdf')
+                    else:
+                        plt.savefig(f"Reports/report_{data_today}_{hostid}_{graphid}.pdf", format='pdf')
 
                     return render(request, 'sucess.html')
             else:
