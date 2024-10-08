@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from pyzabbix import ZabbixAPI
 from . import forms
+from .Modules.reportGen import create_pdf
 import re
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -122,7 +123,7 @@ def reportGen(request):
     if request.method == 'POST':
         form = forms.ReportForm(request.POST)
         if form.is_valid():
-            graph = str(form.cleaned_data['graph_select'])
+            graph = form.cleaned_data['graph_select']
             date = str(form.cleaned_data['date_select'])
             time = str(form.cleaned_data['time_select'])
             date_end = str(form.cleaned_data['date_end_select'])
@@ -131,6 +132,7 @@ def reportGen(request):
             data_inicio_formatada = datetime.strptime(data_inicio, '%Y-%m-%d %H:%M')
             data_final = date_end+" "+time_end
             data_final_formatada = datetime.strptime(data_final, '%Y-%m-%d %H:%M')
+            print(graph)
 
             pattern = r"^\d+"
             match = re.match(pattern, graph)
@@ -176,17 +178,17 @@ def reportGen(request):
 
 
                     data_today = str(datetime.now().strftime('%Y%m%d%H%M'))
-                    #print(data_today)
-                    #plt.show()
+
+                    plt.savefig("Reports/graph_01.png", format='png')
 
                     caminho_arquivo = f"Reports/report_{data_today}_{hostid}_{graphid}.pdf"
                     diretorio = os.path.dirname(caminho_arquivo)
                     #salvar arquivo
-                    if not os.path.exists(diretorio):
-                        os.makedirs(diretorio)
-                        plt.savefig(f"Reports/report_{data_today}_{hostid}_{graphid}.pdf", format='pdf')
-                    else:
-                        plt.savefig(f"Reports/report_{data_today}_{hostid}_{graphid}.pdf", format='pdf')
+                    titles_and_images = [
+                        ("Gráfico 1", "Reports/graph_01.png")
+                    ]
+
+                    create_pdf(titles_and_images, f"Reports/report_{data_today}.pdf")
 
                     return render(request, 'sucess.html')
             else:
