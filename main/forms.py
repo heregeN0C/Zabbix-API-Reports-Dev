@@ -14,7 +14,7 @@ class HostForm(forms.Form):
 
 class ReportForm(forms.Form):
 
-    graph_select = forms.CharField()
+    graph_select = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=[])
     date_select = forms.CharField()
     time_select = forms.CharField()
     date_end_select = forms.CharField()

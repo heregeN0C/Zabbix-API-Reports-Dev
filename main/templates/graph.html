@@ -4,26 +4,25 @@
     <h1>LUNIO REPORTS</h1>
     <form action="/report_gen/" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-        <fieldset>
-            <ul>
-                {% for graph in graph_list %}
-                    <li>
-                        <label for="graph_select">{{ graph.name }}</label>
-                        <input type="checkbox" value="{{ graph.graphid }};{{ graph.name }}" name="graph_select" id="graph_select">
-                    </li>
-                {% endfor %}
-            </ul>
-            <label for="date_select">Data de inicio</label>
-            <input type="date" name="date_select" id="date_select" required>
-            <label for="time_select">Hora de inicio</label>
-            <input type="time" name="time_select" id="time_select" required>
-            <label for="date_end_select">Data Final</label>
-            <input type="date" name="date_end_select" id="date_end_select" required>
-            <label for="time_end_select">Hora Final</label>
-            <input type="time" name="time_end_select" id="time_end_select" required>
-            <input type="submit" class="btn btn-primary" value="Prosseguir">
-        </fieldset>
-
-    </form>
+    <fieldset>
+        <ul>
+            {% for graph in graph_list %}
+                <li>
+                    <input type="checkbox" value="{{ graph.graphid }}" name="graph_select" id="graph_select">
+                    {{ graph.name }} (ID: {{ graph.graphid }})
+                </li>
+            {% endfor %}
+        </ul>
+        <label for="date_select">Data de inicio</label>
+        <input type="date" name="date_select" id="date_select" required>
+        <label for="time_select">Hora de inicio</label>
+        <input type="time" name="time_select" id="time_select" required>
+        <label for="date_end_select">Data Final</label>
+        <input type="date" name="date_end_select" id="date_end_select" required>
+        <label for="time_end_select">Hora Final</label>
+        <input type="time" name="time_end_select" id="time_end_select" required>
+        <input type="submit" class="btn btn-primary" value="Prosseguir">
+    </fieldset>
+</form>
     {{ erros }}
 {% endblock %}

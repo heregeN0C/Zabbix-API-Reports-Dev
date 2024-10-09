@@ -119,27 +119,35 @@ def MetricsSelect(request):
         #form = forms.GraphForm()
         return render(request, 'graph.html')
 
+
 def reportGen(request):
+    # Obter os gráficos selecionados a partir do POST
+    itens_selecionados = request.POST.getlist('graph_select')
+
+    # Apenas exibindo os gráficos selecionados para debug
+    print(itens_selecionados)
+
     if request.method == 'POST':
         form = forms.ReportForm(request.POST)
+
+        # Não é necessário atribuir choices aqui, pois já lidamos com isso no template
         if form.is_valid():
-            graph = form.cleaned_data['graph_select']
+            graph_ids = form.cleaned_data['graph_select']
             date = str(form.cleaned_data['date_select'])
             time = str(form.cleaned_data['time_select'])
             date_end = str(form.cleaned_data['date_end_select'])
             time_end = str(form.cleaned_data['time_end_select'])
-            data_inicio = date+" "+time
+
+            # Combinar as datas e horas
+            data_inicio = date + " " + time
             data_inicio_formatada = datetime.strptime(data_inicio, '%Y-%m-%d %H:%M')
-            data_final = date_end+" "+time_end
+            data_final = date_end + " " + time_end
             data_final_formatada = datetime.strptime(data_final, '%Y-%m-%d %H:%M')
-            print(graph)
 
-            pattern = r"^\d+"
-            match = re.match(pattern, graph)
-            if match:
-                graphid = str(match.group())
+            hostid = request.COOKIES['host_id']
 
-                hostid = request.COOKIES['host_id']
+            for graphid in graph_ids:
+                # Coletar os itens de gráficos com base no host e graphid
                 payload_gitem = {
                     "hostid": hostid,
                     "graphids": graphid,
@@ -150,11 +158,12 @@ def reportGen(request):
 
                 for row in r_gitem['result']:
                     itemid = row["itemid"]
-                    # coletar historico do item
+
+                    # Coletar o histórico do item
                     payload_history = {
                         "itemids": itemid,
                         "hostids": hostid,
-                        "time_from": int(data_inicio_formatada.timestamp()),  # Certifique-se de que este tempo esteja correto
+                        "time_from": int(data_inicio_formatada.timestamp()),
                         "time_till": int(data_final_formatada.timestamp()),
                         "sortfield": "clock",
                         "sortorder": "ASC"
@@ -171,29 +180,24 @@ def reportGen(request):
                         valor_convertido = float(r_history["result"][i]["value"]) / 1000000
                         value_ha.append(round(valor_convertido, 2))
 
+                    # Gerar o gráfico usando matplotlib
                     fig, ax = plt.subplots(figsize=(75, 25))
                     ax.plot(time_ha, value_ha)
                     ax.set_xlabel('Time', fontsize='30')
                     ax.set_ylabel('Trafigo(em Mbps)', fontsize='30')
 
-
+                    # Salvar o gráfico
                     data_today = str(datetime.now().strftime('%Y%m%d%H%M'))
-
                     plt.savefig("Reports/graph_01.png", format='png')
 
+                    # Gerar o relatório em PDF
                     caminho_arquivo = f"Reports/report_{data_today}_{hostid}_{graphid}.pdf"
-                    diretorio = os.path.dirname(caminho_arquivo)
-                    #salvar arquivo
-                    titles_and_images = [
-                        ("Gráfico 1", "Reports/graph_01.png")
-                    ]
+                    titles_and_images = [("Gráfico 1", "Reports/graph_01.png")]
 
-                    create_pdf(titles_and_images, f"Reports/report_{data_today}.pdf")
+                    create_pdf(titles_and_images, caminho_arquivo)
 
                     return render(request, 'sucess.html')
-            else:
-                print("erro ao coletar graphid")
-
         else:
             erros = form.errors
-            return render(request, 'graph.html', {'erros':erros})
+            return render(request, 'graph.html', {'erros': erros})
+
